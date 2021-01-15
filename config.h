@@ -15,11 +15,11 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 static const char *fonts[]          = { "Inconsolata:size=20" };
 static const char dmenufont[]       = "Inconsolata:size=20";
-static const char col_gray1[]       = "#073642";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#002b36";
+static const char col_gray1[]       = "black";
+static const char col_gray2[]       = "white";
+static const char col_gray3[]       = "white";
+static const char col_gray4[]       = "white";
+static const char col_cyan[]        = "grey10";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -136,6 +136,7 @@ static Key keys[] = {
 	{ MODKEY, XK_s,                     spawn,          {.v = screenshot    } },
 	{ MODKEY, XK_w,                     killclient,     {0} },
 	{ MODKEY|ShiftMask, XK_q,           quit,           {0} },
+	{ MODKEY|ShiftMask, XK_r, quit, {1}},
 	{ MODKEY|ShiftMask, XK_e,           spawn, {.v = suspend       } },
 	{ MODKEY|ShiftMask, XK_Delete,      spawn, {.v = shutdown      } },
 };
