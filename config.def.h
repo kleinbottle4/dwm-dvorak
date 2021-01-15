@@ -143,6 +143,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask, XK_r, quit, {1}},
 	{ MODKEY|ShiftMask, XK_e,           spawn, {.v = suspend       } },
 	{ MODKEY|ShiftMask, XK_Delete,      spawn, {.v = shutdown      } },
+	{ MODKEY,                       XK_o,      reorganizetags, {0} },
 };
 
 /* button definitions */
