@@ -1,5 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <X11/XF86keysym.h>
+
 /* appearance */
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
@@ -63,7 +65,21 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *termcmd[]  = { "st", "-d", "/home/syed", "-e", "tmux", NULL};
+static const char *nnn[]      = { "st", "-d", "/home/syed", "bash", "-c", "nnn -il;bash",   NULL};
+static const char *calcurse[] = { "st", "-d", "/home/syed", "bash", "-c", "calcurse;bash",  NULL};
+static const char *mutt[]     = { "st", "-d", "/home/syed", "bash", "-c", "mutt;bash",      NULL};
+static const char *brightness_dec[]   = {"/home/syed/sr/dwm/bin/brightness",   "5%-", "-",  NULL};
+static const char *brightness_inc[]   = {"/home/syed/sr/dwm/bin/brightness",   "+5%", "+",  NULL};
+static const char *brightness_1[]     = {"/home/syed/sr/dwm/bin/brightness",       "1",  "1", NULL};
+static const char *brightness_4[]     = {"/home/syed/sr/dwm/bin/brightness",       "4",  "4", NULL};
+static const char *screenshot[]       = {"/home/syed/sr/dwm/bin/screenshot", "Screenshot",  NULL};
+static const char *toggle_comp[]      = {"/home/syed/sr/dwm/bin/toggle_comp",               NULL};
+static const char *volume_force_dec[] = {"/home/syed/sr/dwm/bin/volume_force", "-5%",       NULL};
+static const char *volume_force_inc[] = {"/home/syed/sr/dwm/bin/volume_force", "+5%",       NULL};
+static const char *volume_mute[]      = {"/home/syed/sr/dwm/bin/volume",       "toggle",    NULL};
+static const char *shutdown[]         = {"/usr/sbin/shutdown", "now",  NULL};
+static const char *suspend[]          = {"systemctl", "suspend", "-i", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -78,7 +94,6 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 	// { MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	// { MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	// { MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
@@ -101,9 +116,28 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
     // gaps
     { MODKEY|ShiftMask,             XK_g,      togglegaps,     {0} },
+	/* commands */
+	{ MODKEY, XK_backslash,             spawn, {.v = toggle_comp   } },
+	{ MODKEY, XK_c,                     spawn, {.v = calcurse      } },
+	{ MODKEY|ShiftMask, XK_n,                     spawn, {.v = nnn           } },
+	{ MODKEY|ShiftMask, XK_m,           spawn, {.v = mutt          } },
+	{ MODKEY|ShiftMask, XK_bracketright,spawn, {.v = brightness_inc} },
+	{ MODKEY|ShiftMask, XK_bracketleft, spawn, {.v = brightness_dec} },
+	{ MODKEY,           XK_apostrophe,      spawn, {.v = brightness_4  } },
+	{ MODKEY|ShiftMask, XK_apostrophe,       spawn, {.v = brightness_1  } },
+	{ 0,      XF86XK_MonBrightnessUp,   spawn, {.v = brightness_inc} },
+	{ 0,      XF86XK_MonBrightnessDown, spawn, {.v = brightness_dec} },
+	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volume_force_inc} },
+	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = volume_force_dec} },
+	{ 0,      XF86XK_AudioMute,         spawn, {.v = volume_mute   } },
+	{ 0,      XK_Print,                 spawn, {.v = screenshot    } },
+	{ MODKEY, XK_s,                     spawn,          {.v = screenshot    } },
+	{ MODKEY, XK_w,                     killclient,     {0} },
+	{ MODKEY|ShiftMask, XK_q,           quit,           {0} },
+	{ MODKEY|ShiftMask, XK_e,           spawn, {.v = suspend       } },
+	{ MODKEY|ShiftMask, XK_Delete,      spawn, {.v = shutdown      } },
 };
 
 /* button definitions */
