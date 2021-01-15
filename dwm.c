@@ -1866,6 +1866,9 @@ tagmon(const Arg *arg)
 void
 tile(Monitor *m)
 {
+	/*override layout symbol */
+	snprintf(m->ltsymbol, sizeof m->ltsymbol, "(%d)", m->nmaster);
+
     unsigned int i, n, h, r, oe = enablegaps, ie = enablegaps, mw, my, ty, smh;
 	Client *c;
 
