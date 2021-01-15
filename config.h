@@ -3,7 +3,7 @@
 /* appearance */
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
-static const unsigned int cornerrad = 4;
+static const unsigned int cornerrad = 7;
 static const unsigned int gappih    = 5;
 static const unsigned int gappiv    = 5;
 static const unsigned int gappoh    = 5;
