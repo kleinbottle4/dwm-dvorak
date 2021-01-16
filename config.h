@@ -6,7 +6,7 @@
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int minwsz    = 20;       /* Minimal heigt of a client for smfact */
-static const unsigned int cornerrad = 10;
+static const unsigned int cornerrad = 15;
 static const unsigned int gappih    = 5;
 static const unsigned int gappiv    = 5;
 static const unsigned int gappoh    = 5;
