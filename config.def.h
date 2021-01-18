@@ -6,7 +6,7 @@
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int minwsz    = 20;       /* Minimal heigt of a client for smfact */
-static const unsigned int cornerrad = 15;
+static const unsigned int cornerrad = 10;
 static const unsigned int gappih    = 5;
 static const unsigned int gappiv    = 5;
 static const unsigned int gappoh    = 5;
@@ -36,7 +36,8 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	{ NULL, NULL, NULL, 0, False, -1},
+	// { "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	// { "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 };
 
@@ -48,8 +49,8 @@ static const int resizehints = 0;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "(t)",      tile },    /* first entry is default */
+	{ "{f}",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
 
@@ -68,49 +69,83 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", "-d", "/home/syed", "-e", "tmux", NULL};
-static const char *nnn[]      = { "st", "-d", "/home/syed", "bash", "-c", "nnn -il;bash",   NULL};
+static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -il;bash",   NULL};
 static const char *calcurse[] = { "st", "-d", "/home/syed", "bash", "-c", "calcurse;bash",  NULL};
 static const char *mutt[]     = { "st", "-d", "/home/syed", "bash", "-c", "mutt;bash",      NULL};
-static const char *brightness_dec[]   = {"/home/syed/sr/dwm/bin/brightness",   "5%-", "-",  NULL};
-static const char *brightness_inc[]   = {"/home/syed/sr/dwm/bin/brightness",   "+5%", "+",  NULL};
-static const char *brightness_1[]     = {"/home/syed/sr/dwm/bin/brightness",       "1",  "1", NULL};
-static const char *brightness_4[]     = {"/home/syed/sr/dwm/bin/brightness",       "4",  "4", NULL};
-static const char *screenshot[]       = {"/home/syed/sr/dwm/bin/screenshot", "Screenshot",  NULL};
-static const char *toggle_comp[]      = {"/home/syed/sr/dwm/bin/toggle_comp",               NULL};
-static const char *volume_force_dec[] = {"/home/syed/sr/dwm/bin/volume_force", "-5%",       NULL};
-static const char *volume_force_inc[] = {"/home/syed/sr/dwm/bin/volume_force", "+5%",       NULL};
-static const char *volume_mute[]      = {"/home/syed/sr/dwm/bin/volume",       "toggle",    NULL};
-static const char *shutdown[]         = {"/usr/sbin/shutdown", "now",  NULL};
+static const char *vim[]      = { "gvim", NULL};
+static const char *brightness_dec[]   = {"/home/syed/sr/dwm/bin/brightness", "5%-", "-", NULL};
+static const char *brightness_inc[]   = {"/home/syed/sr/dwm/bin/brightness", "+5%", "+", NULL};
+static const char *brightness_1[]     = {"/home/syed/sr/dwm/bin/brightness", "1", "1", NULL};
+static const char *brightness_4[]     = {"/home/syed/sr/dwm/bin/brightness", "4", "4", NULL};
+static const char *screenshot[]       = {"/home/syed/sr/dwm/bin/screenshot", "Screenshot", NULL};
+static const char *toggle_comp[]      = {"/home/syed/sr/dwm/bin/toggle_comp", NULL};
+static const char *volume_force_dec[] = {"/home/syed/sr/dwm/bin/volume_force", "-5%", NULL};
+static const char *volume_force_inc[] = {"/home/syed/sr/dwm/bin/volume_force", "+5%", NULL};
+static const char *volume_mute[]      = {"/home/syed/sr/dwm/bin/volume", "toggle", NULL};
+static const char *shutdown[]         = {"/usr/sbin/shutdown", "now", NULL};
 static const char *suspend[]          = {"systemctl", "suspend", "-i", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	/* window management */
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_o,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_semicolon, reorganizetags, {0} },
+	{ MODKEY|ShiftMask,             XK_j,      pushdown,       {0} },
+	{ MODKEY|ShiftMask,             XK_k,      pushup,         {0} },
+	{ MODKEY,                       XK_bracketright, shiftview, {+1}},
+	{ MODKEY,                       XK_bracketleft,  shiftview, {-1}},
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|ShiftMask,             XK_h,      setsmfact,      {.f = +0.05} },
 	{ MODKEY|ShiftMask,             XK_l,      setsmfact,      {.f = -0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[2]} },
     { MODKEY,                       XK_f,      fullscreen,     {0} },
-	// { MODKEY|ShiftMask,             XK_space,  setlayout,      {0} },
-	// { MODKEY|ShiftMask,             XK_i,  setlayout,      {0} },
-	{ MODKEY|ShiftMask,                       XK_space,  togglefloating, {0} },
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+	/* monitor */
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	/* toggle aesthetics */
+    { MODKEY,                       XK_g,      togglegaps,     {0} },
+	{ MODKEY,                       XK_backslash, spawn, {.v = toggle_comp   } },
+	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	/* brightness */
+	{ MODKEY|ShiftMask,             XK_bracketright, spawn, {.v = brightness_inc} },
+	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn, {.v = brightness_dec} },
+	{ MODKEY,                       XK_apostrophe,   spawn, {.v = brightness_4  } },
+	{ MODKEY|ShiftMask,             XK_apostrophe,   spawn, {.v = brightness_1  } },
+	{ 0,      XF86XK_MonBrightnessUp,   spawn, {.v = brightness_inc} },
+	{ 0,      XF86XK_MonBrightnessDown, spawn, {.v = brightness_dec} },
+	/* closing things */
+	{ MODKEY|ShiftMask,             XK_w,      killclient, {0} },
+	{ MODKEY|ShiftMask,             XK_q,      quit,  {0} },
+	{ MODKEY|ShiftMask,             XK_r,      quit,  {1}},
+	{ MODKEY|ShiftMask,             XK_e,      spawn, {.v = suspend       } },
+	{ MODKEY|ShiftMask,             XK_Delete, spawn, {.v = shutdown      } },
+	/* applications */
+	{ MODKEY,                       XK_p,      spawn, {.v = dmenucmd } },
+	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd } },
+	{ MODKEY,                       XK_c,      spawn, {.v = calcurse      } },
+	{ MODKEY,                       XK_n,      spawn, {.v = nnn           } },
+	{ MODKEY,                       XK_m,      spawn, {.v = mutt          } },
+	{ MODKEY,                       XK_v,      spawn, {.v = vim           } },
+	{ MODKEY,                       XK_s,      spawn, {.v = screenshot    } },
+	{ 0,                            XK_Print,  spawn, {.v = screenshot    } },
+	/* audio */
+	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volume_force_inc} },
+	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = volume_force_dec} },
+	{ 0,      XF86XK_AudioMute,         spawn, {.v = volume_mute   } },
+	/* virtual desktops */
+	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -120,32 +155,6 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-    // gaps
-    { MODKEY|ShiftMask,             XK_g,      togglegaps,     {0} },
-	/* commands */
-	{ MODKEY, XK_backslash,             spawn, {.v = toggle_comp   } },
-	{ MODKEY, XK_c,                     spawn, {.v = calcurse      } },
-	{ MODKEY, XK_n,                     spawn, {.v = nnn           } },
-	{ MODKEY, XK_m,           spawn, {.v = mutt          } },
-	{ MODKEY|ShiftMask, XK_bracketright,spawn, {.v = brightness_inc} },
-	{ MODKEY|ShiftMask, XK_bracketleft, spawn, {.v = brightness_dec} },
-	{ MODKEY,           XK_apostrophe,      spawn, {.v = brightness_4  } },
-	{ MODKEY|ShiftMask, XK_apostrophe,       spawn, {.v = brightness_1  } },
-	{ 0,      XF86XK_MonBrightnessUp,   spawn, {.v = brightness_inc} },
-	{ 0,      XF86XK_MonBrightnessDown, spawn, {.v = brightness_dec} },
-	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volume_force_inc} },
-	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = volume_force_dec} },
-	{ 0,      XF86XK_AudioMute,         spawn, {.v = volume_mute   } },
-	{ 0,      XK_Print,                 spawn, {.v = screenshot    } },
-	{ MODKEY, XK_s,                     spawn,          {.v = screenshot    } },
-	{ MODKEY, XK_w,                     killclient,     {0} },
-	{ MODKEY|ShiftMask, XK_q,           quit,           {0} },
-	{ MODKEY|ShiftMask, XK_r, quit, {1}},
-	{ MODKEY|ShiftMask, XK_e,           spawn, {.v = suspend       } },
-	{ MODKEY|ShiftMask, XK_Delete,      spawn, {.v = shutdown      } },
-	{ MODKEY,                       XK_o,      reorganizetags, {0} },
-	{ MODKEY|ShiftMask,           XK_j,      pushdown,       {0} },
-	{ MODKEY|ShiftMask,           XK_k,      pushup,         {0} },
 };
 
 /* button definitions */

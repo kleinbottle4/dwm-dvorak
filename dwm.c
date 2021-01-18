@@ -261,6 +261,7 @@ static void roundcorners(Client *c);
 static Client *prevtiled(Client *c);
 static void pushdown(const Arg *arg);
 static void pushup(const Arg *arg);
+static void shiftview(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -2526,6 +2527,21 @@ roundcorners(Client *c)
     XShapeCombineMask(dpy, w, ShapeBounding, 0-wa.border_width, 0-wa.border_width, mask, ShapeSet);
     XFreePixmap(dpy, mask);
     XFreeGC(dpy, shape_gc);
+}
+
+void
+shiftview(const Arg *arg) {
+	Arg shifted;
+
+	if(arg->i > 0) // left circular shift
+		shifted.ui = (selmon->tagset[selmon->seltags] << arg->i)
+		   | (selmon->tagset[selmon->seltags] >> (LENGTH(tags) - arg->i));
+
+	else // right circular shift
+		shifted.ui = selmon->tagset[selmon->seltags] >> (- arg->i)
+		   | selmon->tagset[selmon->seltags] << (LENGTH(tags) + arg->i);
+
+	view(&shifted);
 }
 
 int
