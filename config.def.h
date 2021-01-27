@@ -67,12 +67,18 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+// applications
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", "-d", "/home/syed", "-e", "tmux", NULL};
 static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -il;bash",   NULL};
 static const char *calcurse[] = { "st", "-d", "/home/syed", "bash", "-c", "calcurse;bash",  NULL};
 static const char *mutt[]     = { "st", "-d", "/home/syed", "bash", "-c", "mutt;bash",      NULL};
 static const char *vim[]      = { "gvim", NULL};
+static const char *xcalc[]    = { "xcalc", NULL};
+static const char *xkill[]    = { "xkill", NULL};
+static const char *fileman[]  = { "pcmanfm", "~", NULL};
+static const char *lispi[] = { "gvim", "/home/syed/li.lisp", NULL};
+/*other*/
 static const char *brightness_dec[]   = {"/home/syed/sr/dwm/bin/brightness", "5%-", "-", NULL};
 static const char *brightness_inc[]   = {"/home/syed/sr/dwm/bin/brightness", "+5%", "+", NULL};
 static const char *brightness_1[]     = {"/home/syed/sr/dwm/bin/brightness", "1", "1", NULL};
@@ -106,7 +112,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_l,      setsmfact,      {.f = -0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-    { MODKEY,                       XK_f,      fullscreen,     {0} },
+        { MODKEY,                       XK_f,      fullscreen,     {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	/* monitor */
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
@@ -114,7 +120,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	/* toggle aesthetics */
-    { MODKEY,                       XK_g,      togglegaps,     {0} },
+        { MODKEY,                       XK_g,      togglegaps,     {0} },
 	{ MODKEY,                       XK_backslash, spawn, {.v = toggle_comp   } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	/* brightness */
@@ -126,10 +132,10 @@ static Key keys[] = {
 	{ 0,      XF86XK_MonBrightnessDown, spawn, {.v = brightness_dec} },
 	/* closing things */
 	{ MODKEY|ShiftMask,             XK_w,      killclient, {0} },
-	{ MODKEY|ShiftMask,             XK_q,      quit,  {0} },
+	{ MODKEY|ShiftMask|ControlMask, XK_q,      quit,  {0} },
 	{ MODKEY|ShiftMask,             XK_r,      quit,  {1}},
-	{ MODKEY|ShiftMask,             XK_e,      spawn, {.v = suspend       } },
-	{ MODKEY|ShiftMask,             XK_Delete, spawn, {.v = shutdown      } },
+	{ MODKEY|ShiftMask|ControlMask, XK_e,      spawn, {.v = suspend       } },
+	{ MODKEY|ShiftMask|ControlMask, XK_Delete, spawn, {.v = shutdown      } },
 	/* applications */
 	{ MODKEY,                       XK_p,      spawn, {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd } },
@@ -137,8 +143,12 @@ static Key keys[] = {
 	{ MODKEY,                       XK_n,      spawn, {.v = nnn           } },
 	{ MODKEY,                       XK_m,      spawn, {.v = mutt          } },
 	{ MODKEY,                       XK_v,      spawn, {.v = vim           } },
+	{ MODKEY,                       XK_x,      spawn, {.v = xcalc           } },
+	{ MODKEY|ShiftMask,             XK_z,      spawn, {.v = xkill           } },
 	{ MODKEY,                       XK_s,      spawn, {.v = screenshot    } },
 	{ 0,                            XK_Print,  spawn, {.v = screenshot    } },
+	{ MODKEY,                       XK_a,      spawn, {.v = fileman}},
+	{ MODKEY, XK_slash, spawn, {.v = lispi}},
 	/* audio */
 	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volume_force_inc} },
 	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = volume_force_dec} },
