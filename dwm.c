@@ -211,15 +211,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void fullscreen(const Arg *arg);
 static void setgaps(int oh, int ov, int ih, int iv);
-static void incrgaps(const Arg *arg);
-static void incrigaps(const Arg *arg);
-static void incrogaps(const Arg *arg);
-static void incrohgaps(const Arg *arg);
-static void incrovgaps(const Arg *arg);
-static void incrihgaps(const Arg *arg);
-static void incrivgaps(const Arg *arg);
 static void togglegaps(const Arg *arg);
-static void defaultgaps(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setsmfact(const Arg *arg);
@@ -262,6 +254,7 @@ static Client *prevtiled(Client *c);
 static void pushdown(const Arg *arg);
 static void pushup(const Arg *arg);
 static void shiftview(const Arg *arg);
+static void autostart(void);
 
 /* variables */
 static const char broken[] = "broken";
@@ -1489,8 +1482,9 @@ restack(Monitor *m)
 	XEvent ev;
 	XWindowChanges wc;
 
-    for (c = m->stack; c; c = c->snext)
-        roundcorners(c);
+    for (c = m->stack; c; c = c->snext) {
+		roundcorners(c);
+	}
 
 	drawbar(m);
 	if (!m->sel)
@@ -2544,6 +2538,12 @@ shiftview(const Arg *arg) {
 	view(&shifted);
 }
 
+void
+autostart(void)
+{
+	system("/home/syed/sr/dwm/bin/autostart &");
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -2562,6 +2562,7 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
+	autostart();
 	run();
 	if(restart) execvp(argv[0], argv);
 	cleanup();
