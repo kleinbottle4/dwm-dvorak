@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo start
+notify-send "$1" -t 700
+echo done
+exit 0

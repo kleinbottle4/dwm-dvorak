@@ -1,0 +1,4 @@
+#!/bin/sh
+
+setxkbmap gb
+	~/sr/dwm/bin/notify "GB QWERTY"

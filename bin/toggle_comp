@@ -1,0 +1,13 @@
+#!/bin/sh
+
+comp="compton"
+
+if pgrep $comp >/dev/null; then
+    ~/sr/dwm/bin/notify "Compositor off"
+    pkill $comp &
+else
+    ~/sr/dwm/bin/notify "Compositor on"
+    $comp &
+fi
+
+exit 0

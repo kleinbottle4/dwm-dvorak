@@ -1,0 +1,5 @@
+#!/bin/sh
+
+f="/home/syed/me/wallpapers"
+sed -i '1{h;d};$G' "$f/cur"
+nitrogen --set-zoom-fill $f/$(head -n 1 "$f/cur")

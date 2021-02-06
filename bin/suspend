@@ -1,0 +1,6 @@
+#!/bin/sh
+
+systemctl suspend -i
+exit 0
+
+# N.b. /etc/sudoers.d/mysudoers

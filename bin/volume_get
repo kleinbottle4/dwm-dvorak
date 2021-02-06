@@ -1,0 +1,5 @@
+#!/bin/sh
+
+re="[[:digit:]]\{1,3\}\%"
+printf "%s" $(amixer get Master | grep -om 1 "$re")
+exit 0

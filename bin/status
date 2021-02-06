@@ -1,0 +1,66 @@
+#!/bin/bash
+
+function main
+{
+	printf '(%s %s(%s)'\
+	$(echo $1 | tr -d '%')\
+	"$(acpi_info)"\
+	"$(date '+%a %d/%m %H:%M:%S')"
+}
+
+acpi_info ()
+{
+	ACPI=$(acpi -bt)
+	BAT=$(proc_bat "$ACPI")
+	TEMP=$(cpu_temp "$ACPI")
+	printf "%s)(%s %s)" $TEMP $BAT
+}
+
+proc_bat()
+{
+	ACPI=$(echo "$1" | grep "Battery 0")
+	f=Full
+	b=Discharging
+	c=Charging
+	u=Unknown
+
+	# % remaining and {raw displayed} charging status
+	pr=$(echo "$ACPI" | grep "[[:digit:]]{1,3}%" -Eo | tr -d "%")
+	_cs=$(echo "$ACPI" | grep "($f|$b|$c|$u)" -Eo)
+	cs=""
+	case $_cs in
+	$f) cs="f";;
+	$b) cs="b";;
+	$c) cs="c";;
+	$u) cs="u";;
+	*) cs='?'
+	esac
+
+	bat_warning $pr $cs &
+
+	printf "%s %d" "$cs" $pr
+	# '$cs' must be in quotation marks to avoid '?' being treated specially
+}
+
+bat_warning ()
+# 1 = pr, 2 = cs
+{
+	cl=60 # critical level
+	msg="Battery low!"
+	sf="/usr/share/sounds/freedesktop/stereo/dialog-error.oga";
+
+	if (( $pr < $cl )) && test "$cs" = b; then
+		notify-send "$msg ($pr%)" -t 500 --urgency=critical &
+		paplay $sf &
+	fi
+}
+
+cpu_temp ()
+{
+	ACPI=$(echo "$1" | grep Thermal | grep -Po \
+		'[[:digit:]]{1,3}(?=\.)')
+	echo $ACPI
+}
+
+main $@
+

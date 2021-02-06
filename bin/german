@@ -1,0 +1,4 @@
+#!/bin/sh
+
+setxkbmap us -variant intl &&
+	~/sr/dwm/bin/notify "US QWERTY"

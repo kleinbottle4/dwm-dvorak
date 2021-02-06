@@ -1,0 +1,8 @@
+#!/bin/sh
+
+f1="$HOME/sr/dwm/bin"
+f2="~/me/scrot"
+scrot -e "mv \$f $f2" &&
+  ~/sr/dwm/bin/notify "$1"
+  paplay ${f1}/screenshot.ogg
+exit 0

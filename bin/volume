@@ -1,0 +1,5 @@
+#!/bin/sh
+
+amixer -M set Master "$1" &&
+    ~/sr/dwm/bin/volume_notify "$1"
+exit 0

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+sf="/usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
+
+paplay "$sf" &
+if test "$1" = "toggle"; then
+  ~/sr/dwm/bin/notify "Toggle volume"
+else
+  ~/sr/dwm/bin/notify "Volume: $(~/sr/dwm/bin/volume_get)"
+fi
+exit 0

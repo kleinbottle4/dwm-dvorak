@@ -1,0 +1,4 @@
+#!/bin/sh
+
+setxkbmap gb -variant colemak &&
+	~/sr/dwm/bin/notify "Colemak"
