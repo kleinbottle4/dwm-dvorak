@@ -14,8 +14,8 @@ static const unsigned int gappov    = 5;
 static const int smartgaps          = 0;
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Inconsolata:size=20" };
 static const char dmenufont[]       = "Inconsolata:size=20";
+static const char *fonts[]          = { dmenufont };
 static const char col_nb[]       = "black";
 static const char col_nbo[]       = "white";
 static const char col_nf[]       = "white";
@@ -79,14 +79,16 @@ static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -il;bash",
 static const char *calcurse[] = { "st", "-d", HOME, "bash", "-c", "calcurse;bash",  NULL};
 static const char *mutt[]     = { "st", "-d", HOME, "bash", "-c", "mutt;bash",      NULL};
 static const char *vim[]      = { "gvim", NULL};
-static const char *xcalc[]    = { "xcalc", NULL};
+static const char *calc[]    = { "galculator", NULL};
 static const char *xkill[]    = { "xkill", NULL};
 static const char *lispi[] = { "gvim", HOME "/li.lisp", NULL};
-static const char *clipmenu[] = { "clipmenu", "-nb", col_nb, "-nf", col_nf, "-sf", col_sf, "-sb", col_sb, NULL};
+static const char *clipmenu[] = { "clipmenu", "-nb", col_nb, "-nf", col_nf, "-sf", col_sf, "-sb", col_sb, "-fn", dmenufont, NULL};
 
 /*other*/
 static const char *brightness_dec[]   = {DWMDIR "/bin/brightness", "5%-", "-", NULL};
 static const char *brightness_inc[]   = {DWMDIR "/bin/brightness", "+5%", "+", NULL};
+static const char *brightness_1[]   = {DWMDIR "/bin/brightness", "1", "1", NULL};
+static const char *brightness_4[]   = {DWMDIR "/bin/brightness", "4", "4", NULL};
 static const char *colemak[]          = {DWMDIR "/bin/colemak", NULL};
 static const char *qwerty[]           = {DWMDIR "/bin/qwerty", NULL};
 static const char *german[]           = {DWMDIR "/bin/german", NULL};
@@ -102,25 +104,25 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	/* window management */
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_o,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_semicolon,      reorganizetags, {0} },
-	{ MODKEY|ShiftMask,             XK_j,      pushdown,       {0} },
-	{ MODKEY|ShiftMask,             XK_k,      pushup,         {0} },
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_p,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,             XK_p,      fullscreen,     {0} },
+	{ MODKEY,                       XK_u,      incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_y,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_o,      reorganizetags, {0} },
+	{ MODKEY|ShiftMask,             XK_n,      pushdown,       {0} },
+	{ MODKEY|ShiftMask,             XK_e,      pushup,         {0} },
 	{ MODKEY,                       XK_bracketright,      shiftview, {+1}},
 	{ MODKEY,                       XK_bracketleft,      shiftview, {-1}},
-	{ MODKEY,                       XK_k,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_n,      focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_e,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ShiftMask,             XK_h,      setsmfact,      {.f = -0.05} },
-	{ MODKEY|ShiftMask,             XK_l,      setsmfact,      {.f = +0.05} },
+	{ MODKEY,                       XK_i,      setmfact,       {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_i,      setsmfact,      {.f = -0.05} },
+	{ MODKEY|ShiftMask,             XK_h,      setsmfact,      {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-    { MODKEY|ShiftMask,             XK_f,      fullscreen,     {0} },
- 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	/* monitor */
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
@@ -132,31 +134,35 @@ static Key keys[] = {
 	/* brightness */
 	{ MODKEY|ShiftMask,             XK_bracketright, spawn, {.v = brightness_inc} },
 	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn, {.v = brightness_dec} },
+	{ MODKEY,             XK_backslash,  spawn, {.v = brightness_4} },
+	{ MODKEY|ShiftMask,             XK_backslash,  spawn, {.v = brightness_1} },
 	{ 0,      XF86XK_MonBrightnessUp,   spawn, {.v = brightness_inc} },
 	{ 0,      XF86XK_MonBrightnessDown, spawn, {.v = brightness_dec} },
 	/* closing things */
 	{ MODKEY|ShiftMask,             XK_w,      killclient, {0} },
 	{ MODKEY|ShiftMask|ControlMask, XK_q,      quit,  {0} },
 	{ MODKEY|ShiftMask,             XK_r,      quit,  {1}},
-	{ MODKEY|ShiftMask|ControlMask, XK_e,      spawn, {.v = suspend       } },
+	{ MODKEY|ShiftMask|ControlMask, XK_s,      spawn, {.v = suspend       } },
 	{ MODKEY|ShiftMask|ControlMask, XK_Delete, spawn, {.v = shutdown      } },
 	/* applications */
-	{ MODKEY,                       XK_p,      spawn, {.v = dmenucmd } },
+	{ MODKEY,                       XK_l,      spawn, {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd } },
 	{ MODKEY,                       XK_c,      spawn, {.v = calcurse      } },
-	{ MODKEY,                       XK_n,      spawn, {.v = nnn           } },
+	{ MODKEY,                       XK_k,      spawn, {.v = nnn           } },
 	{ MODKEY,                       XK_m,      spawn, {.v = mutt          } },
 	{ MODKEY,                       XK_v,      spawn, {.v = vim           } },
-	{ MODKEY,                       XK_x,      spawn, {.v = xcalc           } },
+	{ MODKEY,                       XK_x,      spawn, {.v = calc           } },
 	{ MODKEY|ShiftMask,             XK_z,      spawn, {.v = xkill           } },
 	{ MODKEY,                       XK_s,      spawn, {.v = screenshot    } },
+	{ 0,                            XK_Print,  spawn, {.v = screenshot    } },
 	{ MODKEY,                       XK_a,      spawn, {.v = lispi}},
 	{ MODKEY,                       XK_slash,  spawn, {.v = clipmenu}},
+	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	/* keyboard */
 	{ MODKEY,                       XK_equal,  spawn, {.v = colemak}},
 	{ MODKEY,                       XK_minus,  spawn, {.v = qwerty}},
 	{ MODKEY|ShiftMask,             XK_minus,  spawn, {.v = german}},
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	{ MODKEY|ShiftMask,	XK_apostrophe, spawn, SHCMD("sxiv ~/me/pictures/cf.png")},
 	/* audio */
 	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volume_force_inc} },
 	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = volume_force_dec} },
