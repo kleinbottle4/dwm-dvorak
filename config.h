@@ -97,7 +97,7 @@ static const char *toggle_comp[]      = {DWMDIR "/bin/toggle_comp", NULL};
 static const char *volume_force_dec[] = {DWMDIR "/bin/volume_force", "-5%", NULL};
 static const char *volume_force_inc[] = {DWMDIR "/bin/volume_force", "+5%", NULL};
 static const char *volume_mute[]      = {DWMDIR "/bin/volume", "toggle", NULL};
-static const char *shutdown[]         = {"/usr/sbin/shutdown", "now", NULL};
+static const char *shutdown[]         = {"systemctl", "poweroff", NULL};
 static const char *suspend[]          = {"systemctl", "suspend", "-i", NULL};
 
 static Key keys[] = {
