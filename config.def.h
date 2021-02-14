@@ -3,7 +3,7 @@
 #include <X11/XF86keysym.h>
 
 /* appearance */
-static const unsigned int borderpx  = 0;        /* border pixel of windows */
+static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 0;       /* snap pixel */
 static const unsigned int minwsz    = 20;       /* Minimal heigt of a client for smfact */
 static const unsigned int cornerrad = 10;
@@ -16,15 +16,16 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 static const char dmenufont[]       = "Inconsolata:size=20";
 static const char *fonts[]          = { dmenufont };
-static const char col_nb[]       = "black";
-static const char col_nbo[]       = "white";
+static const char col_nb[]       = "#223";
+static const char col_nbo[]       = "black";
 static const char col_nf[]       = "white";
 static const char col_sf[]       = "white";
-static const char col_sb[]        = "grey10";
+static const char col_sb[]        = "#112";
+static const char col_sbo[] = "grey";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_nf, col_nb, col_nbo },
-	[SchemeSel]  = { col_sf, col_sb,  col_sb  },
+	[SchemeSel]  = { col_sf, col_sb,  col_sbo  },
 };
 
 /* tagging */
