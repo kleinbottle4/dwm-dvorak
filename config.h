@@ -3,7 +3,7 @@
 #include <X11/XF86keysym.h>
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 0;       /* snap pixel */
 static const unsigned int minwsz    = 20;       /* Minimal heigt of a client for smfact */
 static const unsigned int cornerrad = 10;
@@ -16,13 +16,13 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 static const char dmenufont[]       = "Inconsolata:size=20";
 static const char *fonts[]          = { dmenufont };
-static const char col_nb[]       = "#223";
-static const char col_nbo[]       = "black";
-static const char col_nf[]       = "white";
-static const char col_sf[]       = "white";
-static const char col_sb[]        = "#112";
-static const char col_sbo[] = "grey";
-static const char *colors[][3]      = {
+static const char col_nb[] = "#223";
+static const char col_nbo[] = "#223";
+static const char col_nf[] = "white";
+static const char col_sf[] = "white";
+static const char col_sb[] = "#112";
+static const char col_sbo[] = "white";
+static const char *colors[][3] = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_nf, col_nb, col_nbo },
 	[SchemeSel]  = { col_sf, col_sb,  col_sbo  },
@@ -80,26 +80,26 @@ static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -il;bash",
 static const char *calcurse[] = { "st", "-d", HOME, "bash", "-c", "calcurse;bash",  NULL};
 static const char *mutt[]     = { "st", "-d", HOME, "bash", "-c", "mutt;bash",      NULL};
 static const char *vim[]      = { "gvim", NULL};
-static const char *calc[]    = { "galculator", NULL};
+static const char *calc[]     = { "galculator", NULL};
 static const char *xkill[]    = { "xkill", NULL};
-static const char *lispi[] = { "gvim", HOME "/li.lisp", NULL};
+static const char *lispi[]    = { "gvim", HOME "/li.lisp", NULL};
 static const char *clipmenu[] = { "clipmenu", "-nb", col_nb, "-nf", col_nf, "-sf", col_sf, "-sb", col_sb, "-fn", dmenufont, NULL};
+static const char *clipdel[]  = { "clipdel", "-d", ".*", NULL };
 
 /*other*/
-static const char *brightness_dec[]   = {DWMDIR "/bin/brightness", "5%-", "-", NULL};
-static const char *brightness_inc[]   = {DWMDIR "/bin/brightness", "+5%", "+", NULL};
-static const char *brightness_1[]   = {DWMDIR "/bin/brightness", "1", "1", NULL};
-static const char *brightness_4[]   = {DWMDIR "/bin/brightness", "4", "4", NULL};
-static const char *colemak[]          = {DWMDIR "/bin/colemak", NULL};
-static const char *qwerty[]           = {DWMDIR "/bin/qwerty", NULL};
-static const char *german[]           = {DWMDIR "/bin/german", NULL};
-static const char *screenshot[]       = {DWMDIR "/bin/screenshot", "Screenshot", NULL};
-static const char *toggle_comp[]      = {DWMDIR "/bin/toggle_comp", NULL};
-static const char *volume_force_dec[] = {DWMDIR "/bin/volume_force", "-5%", NULL};
-static const char *volume_force_inc[] = {DWMDIR "/bin/volume_force", "+5%", NULL};
-static const char *volume_mute[]      = {DWMDIR "/bin/volume", "toggle", NULL};
-static const char *shutdown[]         = {"systemctl", "poweroff", NULL};
-static const char *suspend[]          = {"systemctl", "suspend", "-i", NULL};
+static const char *brdec[] = {"/usr/bin/brightnessctl", "set", "5%-", NULL };
+static const char *brinc[] = {"/usr/bin/brightnessctl", "set", "+5%", NULL };
+static const char *br1[] = {"/usr/bin/brightnessctl", "set", "1", NULL };
+static const char *br4[] = {"/usr/bin/brightnessctl", "set", "4", NULL };
+static const char *screenshot[] = {DWMDIR "/bin/screenshot", "Screenshot", NULL};
+static const char *toggle_comp[] = {DWMDIR "/bin/toggle_comp", NULL};
+static const char *volfinc[] = { "pactl", "set-sink-volume", "alsa_output.pci-0000_00_14.2.analog-stereo", "+5%", NULL};
+static const char *volfdec[] = { "pactl", "set-sink-volume", "alsa_output.pci-0000_00_14.2.analog-stereo", "-5%", NULL};
+static const char *volmut[] = { "amixer", "-M", "set", "Master", "toggle", NULL};
+static const char *volinc[] = { "amixer", "-M", "set", "Master", "5%+", NULL};
+static const char *voldec[] = { "amixer", "-M", "set", "Master", "5%-", NULL};
+static const char *shutdown[] = {"systemctl", "poweroff", NULL};
+static const char *suspend[] = {"systemctl", "suspend", "-i", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -129,45 +129,57 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	/* aesthetics */
+	/* aesthetics: gaps, compositor, brightness */
 	{ MODKEY,                       XK_apostrophe,      togglegaps,     {0} },
-	{ MODKEY,                       XK_numbersign, spawn, {.v = toggle_comp   } },
-	/* brightness */
-	{ MODKEY|ShiftMask,             XK_bracketright, spawn, {.v = brightness_inc} },
-	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn, {.v = brightness_dec} },
-	{ MODKEY,             XK_backslash,  spawn, {.v = brightness_4} },
-	{ MODKEY|ShiftMask,             XK_backslash,  spawn, {.v = brightness_1} },
-	{ 0,      XF86XK_MonBrightnessUp,   spawn, {.v = brightness_inc} },
-	{ 0,      XF86XK_MonBrightnessDown, spawn, {.v = brightness_dec} },
+	{ MODKEY,                       XK_apostrophe,      notifysend, {.v = "Toggle gaps"}},
+	{ MODKEY|ShiftMask,             XK_apostrophe,      spawn, {.v = toggle_comp}},
+
+	{ 0, XF86XK_MonBrightnessDown,       spawn, {.v = brdec} },
+	{ 0, XF86XK_MonBrightnessDown,       notifysend, {.v = "Brightness -"}},
+	{ MODKEY|ShiftMask, XK_bracketleft,  spawn, {.v = brdec }},
+	{ MODKEY|ShiftMask, XK_bracketleft,  notifysend, {.v = "Brightness -"}},
+	{ 0, XF86XK_MonBrightnessUp,         spawn, {.v = brinc} },
+	{ 0, XF86XK_MonBrightnessUp,         notifysend, {.v = "Brightness +"}},
+	{ MODKEY|ShiftMask, XK_bracketright, spawn, {.v = brinc} },
+	{ MODKEY|ShiftMask, XK_bracketleft,  notifysend, {.v = "Brightness +"}},
+	{ MODKEY,           XK_numbersign,   spawn, {.v = br4} },
+	{ MODKEY,           XK_numbersign,   notifysend, {.v = "Brightness 4"}},
+	{ MODKEY|ShiftMask, XK_numbersign,   spawn, {.v = br1} },
+	{ MODKEY|ShiftMask, XK_numbersign,   notifysend, {.v = "Brightness 1"}},
 	/* closing things */
 	{ MODKEY|ShiftMask,             XK_w,      killclient, {0} },
 	{ MODKEY|ShiftMask|ControlMask, XK_q,      quit,  {0} },
 	{ MODKEY|ShiftMask,             XK_r,      quit,  {1}},
-	{ MODKEY|ShiftMask|ControlMask, XK_s,      spawn, {.v = suspend       } },
-	{ MODKEY|ShiftMask|ControlMask, XK_Delete, spawn, {.v = shutdown      } },
+	{ MODKEY|ShiftMask|ControlMask, XK_z,      spawn, {.v = suspend}},
+	{ MODKEY|ShiftMask,             XK_Delete, spawn, {.v = shutdown}},
 	/* applications */
-	{ MODKEY,                       XK_l,      spawn, {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd } },
-	{ MODKEY,                       XK_c,      spawn, {.v = calcurse      } },
-	{ MODKEY,                       XK_k,      spawn, {.v = nnn           } },
-	{ MODKEY,                       XK_m,      spawn, {.v = mutt          } },
-	{ MODKEY,                       XK_v,      spawn, {.v = vim           } },
-	{ MODKEY,                       XK_x,      spawn, {.v = calc           } },
-	{ MODKEY|ShiftMask,             XK_z,      spawn, {.v = xkill           } },
-	{ MODKEY,                       XK_s,      spawn, {.v = screenshot    } },
-	{ 0,                            XK_Print,  spawn, {.v = screenshot    } },
+	{ MODKEY,                       XK_l,      spawn, {.v = dmenucmd}},
+	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd}},
+	{ MODKEY,                       XK_c,      spawn, {.v = calcurse}},
+	{ MODKEY,                       XK_k,      spawn, {.v = nnn}},
+	{ MODKEY,                       XK_m,      spawn, {.v = mutt}},
+	{ MODKEY,                       XK_v,      spawn, {.v = vim}},
+	{ MODKEY,                       XK_g,      spawn, {.v = calc}},
+	{ MODKEY|ShiftMask,             XK_x,      spawn, {.v = xkill}},
+	{ MODKEY,                       XK_s,      spawn, {.v = screenshot}},
+	{ 0,                            XK_Print,  spawn, {.v = screenshot}},
 	{ MODKEY,                       XK_a,      spawn, {.v = lispi}},
 	{ MODKEY,                       XK_slash,  spawn, {.v = clipmenu}},
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	/* keyboard */
-	{ MODKEY,                       XK_equal,  spawn, {.v = colemak}},
-	{ MODKEY,                       XK_minus,  spawn, {.v = qwerty}},
-	{ MODKEY|ShiftMask,             XK_minus,  spawn, {.v = german}},
-	{ MODKEY|ShiftMask,	XK_apostrophe, spawn, SHCMD("sxiv ~/me/pictures/cf.png")},
+	{ MODKEY|ShiftMask,             XK_slash,  spawn, {.v = clipdel}},
+	{ MODKEY,                       XK_b,      togglebar, {0} },
+	{ MODKEY, XK_d, spawn, SHCMD("xterm")},
+	{ MODKEY, XK_j, spawn, SHCMD("lxterminal")},
 	/* audio */
-	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volume_force_inc} },
-	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = volume_force_dec} },
-	{ 0,      XF86XK_AudioMute,         spawn, {.v = volume_mute   } },
+	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volinc}},
+	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = voldec}},
+	{ 0,      XF86XK_AudioMute,         spawn, {.v = volmut}},
+	{ MODKEY, XK_equal,                 spawn, {.v = volfinc }},
+	{ MODKEY, XK_minus,                 spawn, {.v = volfdec }},
+	{ 0,      XF86XK_AudioRaiseVolume,  spawn, SHCMD(DWMDIR "/bin/volume_notify") },
+	{ 0,      XF86XK_AudioLowerVolume,  spawn, SHCMD(DWMDIR "/bin/volume_notify") },
+	{ 0,      XF86XK_AudioMute,         spawn, SHCMD(DWMDIR "/bin/volume_notify") },
+	{ MODKEY, XK_equal,                 spawn, SHCMD(DWMDIR "/bin/volume_notify") },
+	{ MODKEY, XK_minus,                 spawn, SHCMD(DWMDIR "/bin/volume_notify") },
 	/* virtual desktops */
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },

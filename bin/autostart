@@ -7,8 +7,9 @@ xmodmap -e "keycode 24 = q Q aacute Aacute aacute Aacute"
 xmodmap -e "keycode 33 = semicolon colon oacute Oacute oacute Oacute"
 xmodmap -e "keycode 32 = y Y Uacute Uacute uacute Uacute"
 
-f="/home/syed/me/wallpapers"
-sed -i '1{h;d};$G' "$f/cur"
-nitrogen --set-zoom-fill $f/$(head -n 1 "$f/cur")
+d="/home/syed/me/wallpapers"
+f="$d"/Cur
+sed -i '1h;1d;$G' "$f"
+nitrogen --set-zoom-fill "$d/$(sed '1q' "$f")"
 
-zathura ~/sc/ma/nsc/Cartwright__Sheet_2_1_2_.pdf
+#zathura ~/ma/nsc/Cartwright__Sheet_2_1_2_.pdf

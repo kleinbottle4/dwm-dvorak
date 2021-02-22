@@ -1,4 +1,0 @@
-#!/bin/sh
-
-st -e sh -c calcurse
-exit 0

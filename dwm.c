@@ -212,6 +212,7 @@ static void setfullscreen(Client *c, int fullscreen);
 static void fullscreen(const Arg *arg);
 static void setgaps(int oh, int ov, int ih, int iv);
 static void togglegaps(const Arg *arg);
+static void refreshborders(void);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setsmfact(const Arg *arg);
@@ -255,6 +256,7 @@ static void pushdown(const Arg *arg);
 static void pushup(const Arg *arg);
 static void shiftview(const Arg *arg);
 static void autostart(void);
+static void notifysend(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -265,6 +267,7 @@ static int bh, blw = 0;      /* bar geometry */
 static int enablegaps = 1;
 static int enablefullscreen = 0;
 static int enableoutergaps = 1;
+static int enableborder = 0;
 static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
@@ -1100,7 +1103,7 @@ manage(Window w, XWindowAttributes *wa)
 	/* only fix client y-offset, if the client center might cover the bar */
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-	c->bw = borderpx;
+	c->bw = borderpx*enableborder;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1624,8 +1627,22 @@ void
 togglegaps(const Arg *arg)
 {
 	enablegaps = !enablegaps;
+	enableborder = !enableborder;
+	refreshborders();
 	arrange(selmon);
+
 }
+
+void
+refreshborders(void)
+{
+	Monitor *m;
+	Client *c;
+	for (m = mons; m; m = m->next)
+		for (c = m->clients; c; c = c->next)
+			c->bw = borderpx * enableborder;
+}
+
 
 void
 defaultgaps(const Arg *arg)
@@ -2486,8 +2503,8 @@ roundcorners(Client *c)
     if(!XGetWindowAttributes(dpy, w, &wa))
         return;
 
-    int width = borderpx * 2 + wa.width;
-    int height = borderpx * 2 + wa.height;
+    int width = borderpx*enableborder * 2 + wa.width;
+    int height = borderpx*enableborder * 2 + wa.height;
     /* int width = win_attr.border_width * 2 + win_attr.width; */
     /* int height = win_attr.border_width * 2 + win_attr.height; */
     int rad = cornerrad * enablegaps * (1-enablefullscreen) * enableoutergaps; //config_theme_cornerradius;
@@ -2542,6 +2559,16 @@ void
 autostart(void)
 {
 	system("/home/syed/sr/dwm/bin/autostart &");
+}
+
+void notifysend(const Arg *arg)
+{
+	const char *pre = "/bin/notify-send \"";
+	const char *post = "\" -t 700";
+	int len = strlen(pre) + strlen(arg->v) + strlen(post);
+	char cmd[len];
+	snprintf(cmd, len, "%s%s%s", pre, (const char *)arg->v, post);
+	system(cmd);
 }
 
 int
