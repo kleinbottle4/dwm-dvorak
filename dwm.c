@@ -190,6 +190,7 @@ static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
+static void fullmonocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
@@ -1172,6 +1173,20 @@ monocle(Monitor *m)
 }
 
 void
+fullmonocle(Monitor *m)
+{
+	unsigned int n = 0;
+	Client *c;
+
+	for (c = m->clients; c; c = c->next)
+		if (ISVISIBLE(c))
+			n++;
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
+}
+
+
+void
 motionnotify(XEvent *e)
 {
 	static Monitor *mon = NULL;
@@ -1747,7 +1762,7 @@ fullscreen(const Arg *arg)
 {
 	if (selmon->showbar) {
 		for(last_layout = (Layout *)layouts; last_layout != selmon->lt[selmon->sellt]; last_layout++);
-		setlayout(&((Arg) { .v = &layouts[2] }));
+		setlayout(&((Arg) { .v = &layouts[3] }));
         enablefullscreen = 1;
 	} else {
 		setlayout(&((Arg) { .v = last_layout }));

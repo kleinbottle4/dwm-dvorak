@@ -16,11 +16,11 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 static const char dmenufont[]       = "Inconsolata:size=20";
 static const char *fonts[]          = { dmenufont };
-static const char col_nb[] = "#223";
-static const char col_nbo[] = "#223";
+static const char col_nb[] = "gray10";
+static const char col_nbo[] = "gray10";
 static const char col_nf[] = "white";
 static const char col_sf[] = "white";
-static const char col_sb[] = "#112";
+static const char col_sb[] = "gray5";
 static const char col_sbo[] = "white";
 static const char *colors[][3] = {
 	/*               fg         bg         border   */
@@ -53,6 +53,7 @@ static const Layout layouts[] = {
 	{ "(t)",      tile },    /* first entry is default */
 	{ "{f}",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "!!!",      fullmonocle }, /* fullscreen - bar should not be visible */
 };
 
 /* key definitions */
@@ -77,6 +78,7 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_nb, "-nf", col_nf, "-sb", col_sb, "-sf", col_sf, NULL };
 static const char *termcmd[]  = { "st", "-d", HOME, "-e", "tmux", NULL};
 static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -il;bash",   NULL};
+static const char *w3m[]      = { "st", "-d", "~", "bash", "-c", "w3m -v;bash",   NULL};
 static const char *calcurse[] = { "st", "-d", HOME, "bash", "-c", "calcurse;bash",  NULL};
 static const char *mutt[]     = { "st", "-d", HOME, "bash", "-c", "mutt;bash",      NULL};
 static const char *vim[]      = { "gvim", NULL};
@@ -91,7 +93,8 @@ static const char *brdec[] = {"/usr/bin/brightnessctl", "set", "5%-", NULL };
 static const char *brinc[] = {"/usr/bin/brightnessctl", "set", "+5%", NULL };
 static const char *br1[] = {"/usr/bin/brightnessctl", "set", "1", NULL };
 static const char *br4[] = {"/usr/bin/brightnessctl", "set", "4", NULL };
-static const char *screenshot[] = {DWMDIR "/bin/screenshot", "Screenshot", NULL};
+static const char *maimsel[] = {DWMDIR "/bin/maim", "Screenshot", "-s", NULL};
+static const char *maim[] = {DWMDIR "/bin/maim", "Screenshot", "", NULL};
 static const char *toggle_comp[] = {DWMDIR "/bin/toggle_comp", NULL};
 static const char *volfinc[] = { "pactl", "set-sink-volume", "alsa_output.pci-0000_00_14.2.analog-stereo", "+5%", NULL};
 static const char *volfdec[] = { "pactl", "set-sink-volume", "alsa_output.pci-0000_00_14.2.analog-stereo", "-5%", NULL};
@@ -113,14 +116,14 @@ static Key keys[] = {
 	{ MODKEY,                       XK_o,      reorganizetags, {0} },
 	{ MODKEY|ShiftMask,             XK_n,      pushdown,       {0} },
 	{ MODKEY|ShiftMask,             XK_e,      pushup,         {0} },
-	{ MODKEY,                       XK_bracketright,      shiftview, {+1}},
-	{ MODKEY,                       XK_bracketleft,      shiftview, {-1}},
+	{ MODKEY,                       XK_i,      shiftview, {+1}},
+	{ MODKEY,                       XK_h,      shiftview, {-1}},
 	{ MODKEY,                       XK_n,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_e,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_i,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ShiftMask,             XK_i,      setsmfact,      {.f = -0.05} },
-	{ MODKEY|ShiftMask,             XK_h,      setsmfact,      {.f = +0.05} },
+	{ MODKEY,                       XK_bracketleft,      setmfact,       {.f = -0.05} },
+	{ MODKEY,                       XK_bracketright,      setmfact,       {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_bracketleft,      setsmfact,      {.f = -0.05} },
+	{ MODKEY|ShiftMask,             XK_bracketright,      setsmfact,      {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
@@ -133,15 +136,10 @@ static Key keys[] = {
 	{ MODKEY,                       XK_apostrophe,      togglegaps,     {0} },
 	{ MODKEY,                       XK_apostrophe,      notifysend, {.v = "Toggle gaps"}},
 	{ MODKEY|ShiftMask,             XK_apostrophe,      spawn, {.v = toggle_comp}},
-
 	{ 0, XF86XK_MonBrightnessDown,       spawn, {.v = brdec} },
 	{ 0, XF86XK_MonBrightnessDown,       notifysend, {.v = "Brightness -"}},
-	{ MODKEY|ShiftMask, XK_bracketleft,  spawn, {.v = brdec }},
-	{ MODKEY|ShiftMask, XK_bracketleft,  notifysend, {.v = "Brightness -"}},
 	{ 0, XF86XK_MonBrightnessUp,         spawn, {.v = brinc} },
 	{ 0, XF86XK_MonBrightnessUp,         notifysend, {.v = "Brightness +"}},
-	{ MODKEY|ShiftMask, XK_bracketright, spawn, {.v = brinc} },
-	{ MODKEY|ShiftMask, XK_bracketleft,  notifysend, {.v = "Brightness +"}},
 	{ MODKEY,           XK_numbersign,   spawn, {.v = br4} },
 	{ MODKEY,           XK_numbersign,   notifysend, {.v = "Brightness 4"}},
 	{ MODKEY|ShiftMask, XK_numbersign,   spawn, {.v = br1} },
@@ -153,6 +151,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask|ControlMask, XK_z,      spawn, {.v = suspend}},
 	{ MODKEY|ShiftMask,             XK_Delete, spawn, {.v = shutdown}},
 	/* applications */
+	{ MODKEY, XK_w, spawn, {.v = w3m }},
 	{ MODKEY,                       XK_l,      spawn, {.v = dmenucmd}},
 	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd}},
 	{ MODKEY,                       XK_c,      spawn, {.v = calcurse}},
@@ -161,8 +160,9 @@ static Key keys[] = {
 	{ MODKEY,                       XK_v,      spawn, {.v = vim}},
 	{ MODKEY,                       XK_g,      spawn, {.v = calc}},
 	{ MODKEY|ShiftMask,             XK_x,      spawn, {.v = xkill}},
-	{ MODKEY,                       XK_s,      spawn, {.v = screenshot}},
-	{ 0,                            XK_Print,  spawn, {.v = screenshot}},
+	{ MODKEY,                       XK_s,      spawn, {.v = maim}},
+	{ MODKEY|ShiftMask,             XK_s,      spawn, {.v = maimsel}},
+	{ 0,                            XK_Print,  spawn, {.v = maim}},
 	{ MODKEY,                       XK_a,      spawn, {.v = lispi}},
 	{ MODKEY,                       XK_slash,  spawn, {.v = clipmenu}},
 	{ MODKEY|ShiftMask,             XK_slash,  spawn, {.v = clipdel}},

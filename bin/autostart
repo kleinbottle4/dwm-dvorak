@@ -1,15 +1,4 @@
-#!/bin/sh
-
-xmodmap -e "keycode 38 = a A odiaeresis Adiaeresis adiaeresis Adiaeresis"
-xmodmap -e "keycode 47 = o O odiaeresis Odiaeresis odiaeresis Odiaeresis"
-xmodmap -e "keycode 31 = u U udiaeresis Udiaeresis udiaeresis Udiaeresis"
-xmodmap -e "keycode 24 = q Q aacute Aacute aacute Aacute"
-xmodmap -e "keycode 33 = semicolon colon oacute Oacute oacute Oacute"
-xmodmap -e "keycode 32 = y Y Uacute Uacute uacute Uacute"
-
 d="/home/syed/me/wallpapers"
 f="$d"/Cur
 sed -i '1h;1d;$G' "$f"
 nitrogen --set-zoom-fill "$d/$(sed '1q' "$f")"
-
-#zathura ~/ma/nsc/Cartwright__Sheet_2_1_2_.pdf
