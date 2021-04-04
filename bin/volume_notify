@@ -3,9 +3,9 @@
 sf="/usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
 
 paplay "$sf" &
-if test "$1" = "toggle"; then
-  ~/sr/dwm/bin/notify "Toggle volume"
+if [ "$1" = "toggle" ]; then
+  notify-send -t 700 "Toggle volume"
 else
-  ~/sr/dwm/bin/notify "Volume: $(~/sr/dwm/bin/volume_get)"
+  notify-send -t 700 "Volume: $(amixer get Master | grep -om 1 '[0-9]\{1,3\}%')"
 fi
 exit 0

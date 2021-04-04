@@ -7,10 +7,10 @@ static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 0;       /* snap pixel */
 static const unsigned int minwsz    = 20;       /* Minimal heigt of a client for smfact */
 static const unsigned int cornerrad = 10;
-static const unsigned int gappih    = 5;
-static const unsigned int gappiv    = 5;
-static const unsigned int gappoh    = 5;
-static const unsigned int gappov    = 5;
+static const unsigned int gappih    = 4;
+static const unsigned int gappiv    = 4;
+static const unsigned int gappoh    = 4;
+static const unsigned int gappov    = 4;
 static const int smartgaps          = 0;
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
@@ -77,14 +77,14 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 /* applications */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_nb, "-nf", col_nf, "-sb", col_sb, "-sf", col_sf, NULL };
 static const char *termcmd[]  = { "st", "-d", HOME, "-e", "tmux", NULL};
-static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -il;bash",   NULL};
-static const char *w3m[]      = { "st", "-d", "~", "bash", "-c", "w3m -v;bash",   NULL};
-static const char *calcurse[] = { "st", "-d", HOME, "bash", "-c", "calcurse;bash",  NULL};
-static const char *mutt[]     = { "st", "-d", HOME, "bash", "-c", "mutt;bash",      NULL};
-static const char *vim[]      = { "gvim", NULL};
+static const char *nnn[]      = { "st", "-d", "~", "bash", "-c", "nnn -i; bash",    NULL};
+static const char *w3m[]      = { "st", "-d", "~", "bash", "-c", "w3m -v; bash",    NULL};
+static const char *calcurse[] = { "st", "-d", HOME, "bash", "-c", "calcurse; bash", NULL};
+static const char *mutt[]     = { "st", "-d", HOME, "bash", "-c", "mutt; bash",     NULL};
+static const char *emacs[]    = { "st", "-d", HOME, "bash", "-c", "emacs -Q li.elisp --eval \"(lisp-interaction-mode)\"; bash", NULL};
+static const char *vim[]      = { "st", "-d", HOME, "bash", "-c", "vim; bash",      NULL};
 static const char *calc[]     = { "galculator", NULL};
 static const char *xkill[]    = { "xkill", NULL};
-static const char *lispi[]    = { "gvim", HOME "/li.lisp", NULL};
 static const char *clipmenu[] = { "clipmenu", "-nb", col_nb, "-nf", col_nf, "-sf", col_sf, "-sb", col_sb, "-fn", dmenufont, NULL};
 static const char *clipdel[]  = { "clipdel", "-d", ".*", NULL };
 
@@ -107,23 +107,25 @@ static const char *suspend[] = {"systemctl", "suspend", "-i", NULL};
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	/* window management */
+	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_p,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|ShiftMask,             XK_p,      fullscreen,     {0} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,             XK_f,      fullscreen,     {0} },
 	{ MODKEY,                       XK_u,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_y,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_i,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_o,      reorganizetags, {0} },
-	{ MODKEY|ShiftMask,             XK_n,      pushdown,       {0} },
-	{ MODKEY|ShiftMask,             XK_e,      pushup,         {0} },
-	{ MODKEY,                       XK_i,      shiftview, {+1}},
-	{ MODKEY,                       XK_h,      shiftview, {-1}},
-	{ MODKEY,                       XK_n,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_e,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_bracketleft,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_bracketright,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ShiftMask,             XK_bracketleft,      setsmfact,      {.f = -0.05} },
-	{ MODKEY|ShiftMask,             XK_bracketright,      setsmfact,      {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_o,      distributetags, {0} },
+	{ MODKEY,                       XK_d,      shiftview, {-1}},
+	{ MODKEY,                       XK_h,      focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_t,      focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_n,      shiftview, {+1}},
+	{ MODKEY|ShiftMask,             XK_h,      pushdown,       {0} },
+	{ MODKEY|ShiftMask,             XK_t,      pushup,         {0} },
+	{ MODKEY,                       XK_Left,      setmfact,       {.f = -0.05} },
+	{ MODKEY,                       XK_Right,      setmfact,       {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_Left,      setsmfact,      {.f = -0.05} },
+	{ MODKEY|ShiftMask,             XK_Right,      setsmfact,      {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
@@ -136,62 +138,69 @@ static Key keys[] = {
 	{ MODKEY,                       XK_apostrophe,      togglegaps,     {0} },
 	{ MODKEY,                       XK_apostrophe,      notifysend, {.v = "Toggle gaps"}},
 	{ MODKEY|ShiftMask,             XK_apostrophe,      spawn, {.v = toggle_comp}},
-	{ 0, XF86XK_MonBrightnessDown,       spawn, {.v = brdec} },
+	{ 0, XF86XK_MonBrightnessDown,       spawn,      {.v = brdec} },
 	{ 0, XF86XK_MonBrightnessDown,       notifysend, {.v = "Brightness -"}},
-	{ 0, XF86XK_MonBrightnessUp,         spawn, {.v = brinc} },
+	{ 0, XF86XK_MonBrightnessUp,         spawn,      {.v = brinc} },
 	{ 0, XF86XK_MonBrightnessUp,         notifysend, {.v = "Brightness +"}},
-	{ MODKEY,           XK_numbersign,   spawn, {.v = br4} },
+	{ MODKEY,           XK_minus,        spawn,      {.v = brdec} },
+	{ MODKEY,           XK_minus,        notifysend, {.v = "Brightness -"}},
+	{ MODKEY|ShiftMask, XK_minus,        spawn,      {.v = brinc} },
+	{ MODKEY|ShiftMask, XK_minus,        notifysend, {.v = "Brightness +"}},
+	{ MODKEY,           XK_numbersign,   spawn,      {.v = br4} },
 	{ MODKEY,           XK_numbersign,   notifysend, {.v = "Brightness 4"}},
-	{ MODKEY|ShiftMask, XK_numbersign,   spawn, {.v = br1} },
+	{ MODKEY|ShiftMask, XK_numbersign,   spawn,      {.v = br1} },
 	{ MODKEY|ShiftMask, XK_numbersign,   notifysend, {.v = "Brightness 1"}},
 	/* closing things */
-	{ MODKEY|ShiftMask,             XK_w,      killclient, {0} },
+	{ MODKEY|ShiftMask,             XK_c,      killclient, {0} },
 	{ MODKEY|ShiftMask|ControlMask, XK_q,      quit,  {0} },
 	{ MODKEY|ShiftMask,             XK_r,      quit,  {1}},
 	{ MODKEY|ShiftMask|ControlMask, XK_z,      spawn, {.v = suspend}},
 	{ MODKEY|ShiftMask,             XK_Delete, spawn, {.v = shutdown}},
 	/* applications */
-	{ MODKEY, XK_w, spawn, {.v = w3m }},
-	{ MODKEY,                       XK_l,      spawn, {.v = dmenucmd}},
+	{ MODKEY,                       XK_w, spawn, {.v = w3m }},
+	{ MODKEY,                       XK_p,      spawn, {.v = dmenucmd}},
 	{ MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd}},
 	{ MODKEY,                       XK_c,      spawn, {.v = calcurse}},
 	{ MODKEY,                       XK_k,      spawn, {.v = nnn}},
-	{ MODKEY,                       XK_m,      spawn, {.v = mutt}},
+	{ MODKEY,                       XK_a,      spawn, {.v = mutt}},
 	{ MODKEY,                       XK_v,      spawn, {.v = vim}},
 	{ MODKEY,                       XK_g,      spawn, {.v = calc}},
 	{ MODKEY|ShiftMask,             XK_x,      spawn, {.v = xkill}},
 	{ MODKEY,                       XK_s,      spawn, {.v = maim}},
 	{ MODKEY|ShiftMask,             XK_s,      spawn, {.v = maimsel}},
 	{ 0,                            XK_Print,  spawn, {.v = maim}},
-	{ MODKEY,                       XK_a,      spawn, {.v = lispi}},
+	{ MODKEY,                       XK_e,      spawn, {.v = emacs}},
 	{ MODKEY,                       XK_slash,  spawn, {.v = clipmenu}},
 	{ MODKEY|ShiftMask,             XK_slash,  spawn, {.v = clipdel}},
 	{ MODKEY,                       XK_b,      togglebar, {0} },
-	{ MODKEY, XK_d, spawn, SHCMD("xterm")},
-	{ MODKEY, XK_j, spawn, SHCMD("lxterminal")},
+	{ MODKEY,                       XK_x,      spawn, SHCMD("xterm")},
+	{ MODKEY,                       XK_j,      spawn, SHCMD("lxterminal")},
+	{ MODKEY|ShiftMask,             XK_backslash,      spawn, SHCMD("qw; notify-send qw")},
+	{ MODKEY,                       XK_backslash,      spawn, SHCMD("dvp; notify-send dvp")},
+	{ MODKEY,                       XK_at,      spawn, SHCMD("sxiv dvp.png")},
 	/* audio */
 	{ 0,      XF86XK_AudioRaiseVolume,  spawn, {.v = volinc}},
 	{ 0,      XF86XK_AudioLowerVolume,  spawn, {.v = voldec}},
 	{ 0,      XF86XK_AudioMute,         spawn, {.v = volmut}},
-	{ MODKEY, XK_equal,                 spawn, {.v = volfinc }},
-	{ MODKEY, XK_minus,                 spawn, {.v = volfdec }},
+	// { MODKEY, XK_equal,                 spawn, {.v = volfinc }},
+	// { MODKEY, XK_minus,                 spawn, {.v = volfdec }},
 	{ 0,      XF86XK_AudioRaiseVolume,  spawn, SHCMD(DWMDIR "/bin/volume_notify") },
 	{ 0,      XF86XK_AudioLowerVolume,  spawn, SHCMD(DWMDIR "/bin/volume_notify") },
-	{ 0,      XF86XK_AudioMute,         spawn, SHCMD(DWMDIR "/bin/volume_notify") },
-	{ MODKEY, XK_equal,                 spawn, SHCMD(DWMDIR "/bin/volume_notify") },
-	{ MODKEY, XK_minus,                 spawn, SHCMD(DWMDIR "/bin/volume_notify") },
+	{ 0,      XF86XK_AudioMute,         spawn, SHCMD(DWMDIR "/bin/volume_notify toggle") },
+	// { MODKEY, XK_equal,                 spawn, SHCMD(DWMDIR "/bin/volume_notify") },
+	// { MODKEY, XK_minus,                 spawn, SHCMD(DWMDIR "/bin/volume_notify") },
 	/* virtual desktops */
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
+	{ MODKEY,                       XK_asterisk,      view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_asterisk,      tag,            {.ui = ~0 } },
+	TAGKEYS(                        XK_parenleft,              0)
+	TAGKEYS(                        XK_parenright,             1)
+	TAGKEYS(                        XK_braceright,             2)
+	TAGKEYS(                        XK_plus,                   3)
+	TAGKEYS(                        XK_braceleft,              4)
+	TAGKEYS(                        XK_bracketright,           5)
+	TAGKEYS(                        XK_bracketleft,            6)
+	TAGKEYS(                        XK_exclam,                 7)
+	TAGKEYS(                        XK_equal,                  8)
 };
 
 /* button definitions */

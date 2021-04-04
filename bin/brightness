@@ -1,7 +1,0 @@
-#!/bin/sh
-
-brightnessctl set "$1" &&
-  ~/sr/dwm/bin/notify "Brightness $2"
-exit 0
-
-# N.b. /etc/sudoers.d/mysudoers

@@ -1,6 +1,0 @@
-#!/bin/sh
-
-
- pactl set-sink-volume alsa_output.pci-0000_00_14.2.analog-stereo "$1" &&
-  ~/sr/dwm/bin/volume_notify
-exit 0

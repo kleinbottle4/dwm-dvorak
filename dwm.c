@@ -199,6 +199,7 @@ static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void reorganizetags(const Arg *arg);
+static void distributetags(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
@@ -1964,6 +1965,19 @@ tag(const Arg *arg)
 		focus(NULL);
 		arrange(selmon);
 	}
+}
+
+void
+distributetags(const Arg *arg)
+{
+	unsigned int ui = 1;
+	int i = 0;
+	for (Client *c = selmon->clients; c; c = c->next) {
+		c->tags = (ui << i) & TAGMASK;
+		i = (i + 1) % LENGTH(tags);
+	}
+	focus(NULL);
+	arrange(selmon);
 }
 
 void
