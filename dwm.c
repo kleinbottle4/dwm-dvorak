@@ -266,7 +266,6 @@ static int bh, blw = 0;      /* bar geometry */
 static int enablegaps = 1;
 static int enablefullscreen = 0;
 static int enableoutergaps = 1;
-static int enableborder = 0;
 static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
@@ -1102,7 +1101,7 @@ manage(Window w, XWindowAttributes *wa)
 	/* only fix client y-offset, if the client center might cover the bar */
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-	c->bw = borderpx*enableborder;
+	c->bw = borderpx;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1635,7 +1634,6 @@ void
 togglegaps(const Arg *arg)
 {
 	enablegaps = !enablegaps;
-	enableborder = !enableborder;
 	refreshborders();
 	arrange(selmon);
 
@@ -1648,7 +1646,7 @@ refreshborders(void)
 	Client *c;
 	for (m = mons; m; m = m->next) {
 		for (c = m->clients; c; c = c->next)
-			c->bw = borderpx * enableborder;
+			c->bw = borderpx;
 	}
 }
 
