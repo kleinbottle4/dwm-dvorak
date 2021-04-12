@@ -39,7 +39,7 @@
 #ifdef XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
-#include <X11/extensions/shape.h>
+//#include <X11/extensions/shape.h>
 #include <X11/Xft/Xft.h>
 
 #include "drw.h"
@@ -212,7 +212,6 @@ static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void fullscreen(const Arg *arg);
-static void setgaps(int oh, int ov, int ih, int iv);
 static void togglegaps(const Arg *arg);
 static void refreshborders(void);
 static void setlayout(const Arg *arg);
@@ -252,12 +251,10 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
-static void roundcorners(Client *c);
 static Client *prevtiled(Client *c);
 static void pushdown(const Arg *arg);
 static void pushup(const Arg *arg);
 static void shiftview(const Arg *arg);
-static void autostart(void);
 static void notifysend(const Arg *arg);
 
 /* variables */
@@ -1435,7 +1432,6 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
-    roundcorners(c);
 	XSync(dpy, False);
 }
 
@@ -1500,10 +1496,6 @@ restack(Monitor *m)
 	Client *c;
 	XEvent ev;
 	XWindowChanges wc;
-
-    for (c = m->stack; c; c = c->snext) {
-		roundcorners(c);
-	}
 
 	drawbar(m);
 	if (!m->sel)
@@ -1654,93 +1646,10 @@ refreshborders(void)
 {
 	Monitor *m;
 	Client *c;
-	for (m = mons; m; m = m->next)
+	for (m = mons; m; m = m->next) {
 		for (c = m->clients; c; c = c->next)
 			c->bw = borderpx * enableborder;
-}
-
-
-void
-defaultgaps(const Arg *arg)
-{
-	setgaps(gappoh, gappov, gappih, gappiv);
-}
-
-void
-incrgaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh + arg->i,
-		selmon->gappov + arg->i,
-		selmon->gappih + arg->i,
-		selmon->gappiv + arg->i
-	);
-}
-
-void
-incrigaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh,
-		selmon->gappov,
-		selmon->gappih + arg->i,
-		selmon->gappiv + arg->i
-	);
-}
-
-void
-incrogaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh + arg->i,
-		selmon->gappov + arg->i,
-		selmon->gappih,
-		selmon->gappiv
-	);
-}
-
-void
-incrohgaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh + arg->i,
-		selmon->gappov,
-		selmon->gappih,
-		selmon->gappiv
-	);
-}
-
-void
-incrovgaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh,
-		selmon->gappov + arg->i,
-		selmon->gappih,
-		selmon->gappiv
-	);
-}
-
-void
-incrihgaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh,
-		selmon->gappov,
-		selmon->gappih + arg->i,
-		selmon->gappiv
-	);
-}
-
-void
-incrivgaps(const Arg *arg)
-{
-	setgaps(
-		selmon->gappoh,
-		selmon->gappov,
-		selmon->gappih,
-		selmon->gappiv + arg->i
-	);
+	}
 }
 
 void
@@ -2522,66 +2431,6 @@ zoom(const Arg *arg)
 }
 
 void
-roundcorners(Client *c)
-{
-	return;
-	Window w = c->win;
-	XWindowAttributes wa;
-	XGetWindowAttributes(dpy, w, &wa);
-	
-	// If this returns null, the window is invalid.
-	if(!XGetWindowAttributes(dpy, w, &wa))
-	    return;
-	
-	const int width = borderpx*enableborder * 2 + wa.width;
-	const int height = borderpx*enableborder * 2 + wa.height;
-	/* int width = win_attr.border_width * 2 + win_attr.width; */
-	/* int height = win_attr.border_width * 2 + win_attr.height; */
-	const int rad = cornerrad * enablegaps * (1-enablefullscreen) * enableoutergaps; //config_theme_cornerradius;
-	const int dia = 2 * rad;
-	
-	// do not try to round if the window would be smaller than the corners
-	if(width < dia || height < dia)
-	    return;
-	
-	Pixmap mask = XCreatePixmap(dpy, w, width, height, 1);
-	// if this returns null, the mask is not drawable
-	if(!mask)
-	    return;
-	
-	XGCValues xgcv;
-	GC shape_gc = XCreateGC(dpy, mask, 0, &xgcv);
-	if(!shape_gc) {
-	    XFreePixmap(dpy, mask);
-	    return;
-	}
-
-#define TAU3_4 17280 // 3PI/2
-#define TAU_2  11520 // PI
-#define TAU_4   5760 // PI/2
-
-	const int wmd = width - dia;
-	const int wmd_ = wmd - 1;
-	const int wmr = width - rad;
-	const int hmd = height - dia;
-	const int hmd_ = hmd - 1;
-
-	XSetForeground(dpy, shape_gc, 0);
-	XFillRectangle(dpy, mask, shape_gc, 0, 0, width, height);
-	XSetForeground(dpy, shape_gc, 1);
-	XFillArc(dpy, mask, shape_gc, 0, 0, dia, dia, TAU_4, TAU_4);
-	XFillArc(dpy, mask, shape_gc, wmd_, 0, dia, dia, 0, TAU_4);
-	XFillArc(dpy, mask, shape_gc, 0, hmd_, dia, dia, TAU_2, TAU_4);
-	XFillArc(dpy, mask, shape_gc, wmd_, hmd_, dia, dia, TAU3_4, TAU_4);
-	XFillRectangle(dpy, mask, shape_gc, rad, 0, wmd, height);
-	XFillRectangle(dpy, mask, shape_gc, 0, rad, rad, hmd);
-	XFillRectangle(dpy, mask, shape_gc, wmr, rad, rad, hmd);
-	XShapeCombineMask(dpy, w, ShapeBounding, 0-wa.border_width, 0-wa.border_width, mask, ShapeSet);
-	XFreePixmap(dpy, mask);
-	XFreeGC(dpy, shape_gc);
-}
-
-void
 shiftview(const Arg *arg) {
 	Arg shifted;
 
@@ -2594,22 +2443,6 @@ shiftview(const Arg *arg) {
 		   | selmon->tagset[selmon->seltags] << (LENGTH(tags) + arg->i);
 
 	view(&shifted);
-}
-
-void
-autostart(void)
-{
-	system("/home/syed/sr/dwm/bin/autostart &");
-}
-
-void notifysend(const Arg *arg)
-{
-	const char *pre = "/bin/notify-send \"";
-	const char *post = "\" -t 700";
-	int len = strlen(pre) + strlen(arg->v) + strlen(post);
-	char cmd[len];
-	snprintf(cmd, len, "%s%s%s", pre, (const char *)arg->v, post);
-	system(cmd);
 }
 
 int
@@ -2630,7 +2463,6 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
-	autostart();
 	run();
 	if(restart) execvp(argv[0], argv);
 	cleanup();

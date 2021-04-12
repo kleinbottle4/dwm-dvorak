@@ -1,4 +1,0 @@
-d="/home/syed/me/wallpapers"
-f="$d"/Cur
-sed -i '1h;1d;$G' "$f"
-nitrogen --set-zoom-fill "$d/$(sed '1q' "$f")"
