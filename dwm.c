@@ -2524,49 +2524,61 @@ zoom(const Arg *arg)
 void
 roundcorners(Client *c)
 {
-    Window w = c->win;
-    XWindowAttributes wa;
-    XGetWindowAttributes(dpy, w, &wa);
+	return;
+	Window w = c->win;
+	XWindowAttributes wa;
+	XGetWindowAttributes(dpy, w, &wa);
+	
+	// If this returns null, the window is invalid.
+	if(!XGetWindowAttributes(dpy, w, &wa))
+	    return;
+	
+	const int width = borderpx*enableborder * 2 + wa.width;
+	const int height = borderpx*enableborder * 2 + wa.height;
+	/* int width = win_attr.border_width * 2 + win_attr.width; */
+	/* int height = win_attr.border_width * 2 + win_attr.height; */
+	const int rad = cornerrad * enablegaps * (1-enablefullscreen) * enableoutergaps; //config_theme_cornerradius;
+	const int dia = 2 * rad;
+	
+	// do not try to round if the window would be smaller than the corners
+	if(width < dia || height < dia)
+	    return;
+	
+	Pixmap mask = XCreatePixmap(dpy, w, width, height, 1);
+	// if this returns null, the mask is not drawable
+	if(!mask)
+	    return;
+	
+	XGCValues xgcv;
+	GC shape_gc = XCreateGC(dpy, mask, 0, &xgcv);
+	if(!shape_gc) {
+	    XFreePixmap(dpy, mask);
+	    return;
+	}
 
-    // If this returns null, the window is invalid.
-    if(!XGetWindowAttributes(dpy, w, &wa))
-        return;
+#define TAU3_4 17280 // 3PI/2
+#define TAU_2  11520 // PI
+#define TAU_4   5760 // PI/2
 
-    int width = borderpx*enableborder * 2 + wa.width;
-    int height = borderpx*enableborder * 2 + wa.height;
-    /* int width = win_attr.border_width * 2 + win_attr.width; */
-    /* int height = win_attr.border_width * 2 + win_attr.height; */
-    int rad = cornerrad * enablegaps * (1-enablefullscreen) * enableoutergaps; //config_theme_cornerradius;
-    int dia = 2 * rad;
+	const int wmd = width - dia;
+	const int wmd_ = wmd - 1;
+	const int wmr = width - rad;
+	const int hmd = height - dia;
+	const int hmd_ = hmd - 1;
 
-    // do not try to round if the window would be smaller than the corners
-    if(width < dia || height < dia)
-        return;
-
-    Pixmap mask = XCreatePixmap(dpy, w, width, height, 1);
-    // if this returns null, the mask is not drawable
-    if(!mask)
-        return;
-
-    XGCValues xgcv;
-    GC shape_gc = XCreateGC(dpy, mask, 0, &xgcv);
-    if(!shape_gc) {
-        XFreePixmap(dpy, mask);
-        return;
-    }
-
-    XSetForeground(dpy, shape_gc, 0);
-    XFillRectangle(dpy, mask, shape_gc, 0, 0, width, height);
-    XSetForeground(dpy, shape_gc, 1);
-    XFillArc(dpy, mask, shape_gc, 0, 0, dia, dia, 0, 23040);
-    XFillArc(dpy, mask, shape_gc, width-dia-1, 0, dia, dia, 0, 23040);
-    XFillArc(dpy, mask, shape_gc, 0, height-dia-1, dia, dia, 0, 23040);
-    XFillArc(dpy, mask, shape_gc, width-dia-1, height-dia-1, dia, dia, 0, 23040);
-    XFillRectangle(dpy, mask, shape_gc, rad, 0, width-dia, height);
-    XFillRectangle(dpy, mask, shape_gc, 0, rad, width, height-dia);
-    XShapeCombineMask(dpy, w, ShapeBounding, 0-wa.border_width, 0-wa.border_width, mask, ShapeSet);
-    XFreePixmap(dpy, mask);
-    XFreeGC(dpy, shape_gc);
+	XSetForeground(dpy, shape_gc, 0);
+	XFillRectangle(dpy, mask, shape_gc, 0, 0, width, height);
+	XSetForeground(dpy, shape_gc, 1);
+	XFillArc(dpy, mask, shape_gc, 0, 0, dia, dia, TAU_4, TAU_4);
+	XFillArc(dpy, mask, shape_gc, wmd_, 0, dia, dia, 0, TAU_4);
+	XFillArc(dpy, mask, shape_gc, 0, hmd_, dia, dia, TAU_2, TAU_4);
+	XFillArc(dpy, mask, shape_gc, wmd_, hmd_, dia, dia, TAU3_4, TAU_4);
+	XFillRectangle(dpy, mask, shape_gc, rad, 0, wmd, height);
+	XFillRectangle(dpy, mask, shape_gc, 0, rad, rad, hmd);
+	XFillRectangle(dpy, mask, shape_gc, wmr, rad, rad, hmd);
+	XShapeCombineMask(dpy, w, ShapeBounding, 0-wa.border_width, 0-wa.border_width, mask, ShapeSet);
+	XFreePixmap(dpy, mask);
+	XFreeGC(dpy, shape_gc);
 }
 
 void
