@@ -3,7 +3,7 @@
 #$1 : notify message
 #$2 : options to maim
 
-f1="$HOME/sr/dwm/bin"
+f1="$HOME/src/dwm/bin"
 f2="$HOME/me/pic"
 maim $2 $f2/maim-$(date "+%Y-%m-%d-%H-%M-%S").png &&
 	notify-send Screenshot -t 1000 &&
