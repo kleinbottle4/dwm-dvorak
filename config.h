@@ -11,7 +11,7 @@ static const char     col_sb[]     = COL2;
 static const char     col_sf[]     = COL1;
 static const char     col_sbo[]    = "white";
 static const char     *colors[][3] = {[SchemeNorm] = {col_nf, col_nb, col_nbo}, [SchemeSel]  = {col_sf, col_sb,  col_sbo }, };
-static const char     dmenufont[]  = "monospace:size=19:bold";
+static const char     dmenufont[]  = "monospace:size=15:bold";
 static const char     *fonts[]     = {dmenufont};
 static const float    mfact        = 0.5; /* factor of master area size [0.05..0.95] */
 static const float    smfact       = 0.00; /* factor of tiled clients [0.00..0.95] */
@@ -21,10 +21,10 @@ static const int      showbar      = 1;
 static const int      topbar       = 0;
 static const int      smartgaps    = 0;
 static const unsigned int borderpx = 1;
-static const unsigned int gappih   = 5;
-static const unsigned int gappiv   = 5;
-static const unsigned int gappoh   = 5;
-static const unsigned int gappov   = 5;
+static const unsigned int gappih   = 0;
+static const unsigned int gappiv   = 0;
+static const unsigned int gappoh   = 0;
+static const unsigned int gappov   = 0;
 static const unsigned int minwsz   = 20; /* Minimal heigt of a client for smfact */
 static const unsigned int snap     = 0;
 
@@ -93,8 +93,8 @@ static Key keys[] = {
 	{MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1}},
 
 	/* aesthetics: gaps, compositor, brightness */
-	{MODKEY,                   XK_apostrophe, togglegaps, {0}},
-	{MODKEY,                   XK_apostrophe, spawn,      SHCMD(NOT("gaps"))},
+//	{MODKEY,                   XK_apostrophe, togglegaps, {0}},
+//	{MODKEY,                   XK_apostrophe, spawn,      SHCMD(NOT("gaps"))},
 	{MODKEY,                   XK_numbersign, spawn,      SHCMD("brightnessctl set 4 &&" NOT("br\\ 4"))},
 	{MODKEY|ShiftMask,         XK_numbersign, spawn,      SHCMD("brightnessctl set 1 &&" NOT("br\\ 1"))},
 	{MODKEY,                   XK_minus,      spawn,      SHCMD("brightnessctl set 5%+ &&" NOT("br\\ +"))},
@@ -122,9 +122,8 @@ static Key keys[] = {
 	{0,                            XK_Print,  spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
 	{MODKEY,                       XK_s,      spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
 	{MODKEY,                       XK_c,      spawn, ST("calcurse")},
-	{MODKEY,                       XK_e,      spawn, SHCMD("lxterminal -e emacs -Q ~/foo/main.org")},
-	{MODKEY|ShiftMask,             XK_e,      spawn, ST("emacs -Q -u syed")},
-	{MODKEY|ShiftMask|ControlMask, XK_e,      spawn, ST("emacs ~/foo/main.cl")},
+	{MODKEY,                       XK_e,      spawn, ST("emacsclient -t -a \"\" ~/foo/org/main.org")},
+	{MODKEY|ShiftMask,             XK_e,      spawn, ST("emacsclient -t -a \"\" ~/foo/main.lisp")},
 	{MODKEY|ShiftMask,             XK_m,      spawn, ST("mutt")},
 	{MODKEY,                       XK_j,      spawn, ST("nnn -i")},
 	{MODKEY|ShiftMask,             XK_j,      spawn, ST("noice")},
