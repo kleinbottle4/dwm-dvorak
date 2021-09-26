@@ -2,8 +2,9 @@
 
 #include <X11/XF86keysym.h>
 
-#define COL2 "aquamarine4"
+#define COL2 "gray50"
 #define COL1 "gray5"
+//"gray5"
 static const char     col_nb[]     = COL1;
 static const char     col_nf[]     = COL2;
 static const char     col_nbo[]    = "black";
@@ -11,24 +12,28 @@ static const char     col_sb[]     = COL2;
 static const char     col_sf[]     = COL1;
 static const char     col_sbo[]    = "white";
 static const char     *colors[][3] = {[SchemeNorm] = {col_nf, col_nb, col_nbo}, [SchemeSel]  = {col_sf, col_sb,  col_sbo }, };
-static const char     dmenufont[]  = "monospace:size=15:bold";
+static const char     dmenufont[]  = "monospace:size=20";
 static const char     *fonts[]     = {dmenufont};
-static const float    mfact        = 0.5; /* factor of master area size [0.05..0.95] */
+static const float    mfact        = 0.55; /* factor of master area size [0.05..0.95] */
 static const float    smfact       = 0.00; /* factor of tiled clients [0.00..0.95] */
 static const int      nmaster      = 1; /* number of clients in master area */
 static const int      resizehints  = 0; /* 1 means respect size hints in tiled resizals */
 static const int      showbar      = 1;
 static const int      topbar       = 0;
 static const int      smartgaps    = 0;
-static const unsigned int borderpx = 1;
-static const unsigned int gappih   = 0;
-static const unsigned int gappiv   = 0;
-static const unsigned int gappoh   = 0;
-static const unsigned int gappov   = 0;
+static const unsigned int borderpx = 2;
+static const unsigned int gappih   = 4;
+static const unsigned int gappiv   = 4;
+static const unsigned int gappoh   = 4;
+static const unsigned int gappov   = 4;
 static const unsigned int minwsz   = 20; /* Minimal heigt of a client for smfact */
 static const unsigned int snap     = 0;
 
 static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+static const char ptagf[] = "%s%s";	/* format of a tag label */
+static const char etagf[] = "%s";	/* format of an empty tag */
+static const int lcaselbl = 0;		/* 1 means make tag label lowercase */	
+
 static const Layout layouts[] = {{"(t)", tile}, {"{f}", NULL}, {"[M]", monocle}, {"FUL", fullmonocle}, {"<d>", deck} };
 static const Rule rules[] = {{NULL, NULL, NULL, 0, False, -1} };
 
@@ -43,12 +48,14 @@ static const Rule rules[] = {{NULL, NULL, NULL, 0, False, -1} };
 #define SHCMD(cmd) {.v = (const char*[]){"/bin/sh", "-c", cmd, NULL}}
 #define NOT(s) "notify-send -t 1000 " s
 #define ST(s) SHCMD("st -d " HOME " " s)
+#define TMUX(s) SHCMD("tmux new-session " s)
 #define HOME "/home/syed"
 #define DWMDIR "/home/syed/src/dwm"
 
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {"dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_nb, "-nf", col_nf, "-sb", col_sb, "-sf", col_sf, NULL};
 static const char *termcmd[] = {"st", "-d", HOME, "tmux", NULL};
+static const char *termcmdalt[] = {"st", "-d", HOME, "9", "rc", NULL};
 static const char *clipmenu[] = {"clipmenu", "-nb", col_nb, "-nf", col_nf, "-sf", col_sf, "-sb", col_sb, "-fn", dmenufont, NULL};
 static const char *clipdel[]  = {"clipdel", "-d", ".*", NULL};
 
@@ -93,6 +100,9 @@ static Key keys[] = {
 	{MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1}},
 
 	/* aesthetics: gaps, compositor, brightness */
+//	{MODKEY,                    XK_backslash, spawn, SHCMD("pkill xcompmgr &&" NOT("kill comp"))},
+//	{MODKEY|ShiftMask,          XK_backslash, spawn, SHCMD("xcompmgr &&" NOT("comp"))},
+	{MODKEY, XK_backslash, spawn, SHCMD("pgrep xcompmgr && pkill xcompmgr || xcompmgr; " NOT("comp"))},
 //	{MODKEY,                   XK_apostrophe, togglegaps, {0}},
 //	{MODKEY,                   XK_apostrophe, spawn,      SHCMD(NOT("gaps"))},
 	{MODKEY,                   XK_numbersign, spawn,      SHCMD("brightnessctl set 4 &&" NOT("br\\ 4"))},
@@ -107,32 +117,23 @@ static Key keys[] = {
 	{MODKEY|ShiftMask|ControlMask, XK_q,      quit,  {0}},
 	{MODKEY|ShiftMask,             XK_r,      quit,  {1}},
 	{MODKEY|ShiftMask,             XK_Delete, spawn, SHCMD("systemctl poweroff")},
-	{MODKEY,                       XK_z,      spawn, SHCMD("systemctl suspend -i")},
+	{MODKEY,                       XK_z,      spawn, ST("systemctl -i suspend")},
 
 	/* applications */
-	{MODKEY|ShiftMask,             XK_p,      spawn, SHCMD("echo 'quick run' | dmenu -p '$' | sh ||" NOT("error"))},
-	{MODKEY,                       XK_g,      spawn, SHCMD("galculator")},
-	{MODKEY,                    XK_backslash, spawn, SHCMD("pkill xcompmgr &&" NOT("kill comp"))},
-	{MODKEY|ShiftMask,          XK_backslash, spawn, SHCMD("xcompmgr &&" NOT("comp"))},
 	{MODKEY|ShiftMask,             XK_l,      spawn, SHCMD("slock")},
-	{MODKEY,                       XK_x,      spawn, SHCMD("xcalc")},
-	{MODKEY,                       XK_at,     spawn, SHCMD("sxiv dvp.png")},
 	{MODKEY|ShiftMask,             XK_x,      spawn, SHCMD("xkill")},
-	{MODKEY|ShiftMask,             XK_s,      spawn, SHCMD(DWMDIR "/bin/maim Screenshot -s")},
+	{MODKEY|ShiftMask|ControlMask, XK_s,      spawn, SHCMD(DWMDIR "/bin/maim Screenshot -s")},
+	{MODKEY|ShiftMask,             XK_s,      spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
 	{0,                            XK_Print,  spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
-	{MODKEY,                       XK_s,      spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
 	{MODKEY,                       XK_c,      spawn, ST("calcurse")},
 	{MODKEY,                       XK_e,      spawn, ST("emacsclient -t -a \"\" ~/foo/org/main.org")},
 	{MODKEY|ShiftMask,             XK_e,      spawn, ST("emacsclient -t -a \"\" ~/foo/main.lisp")},
 	{MODKEY|ShiftMask,             XK_m,      spawn, ST("mutt")},
 	{MODKEY,                       XK_j,      spawn, ST("nnn -i")},
-	{MODKEY|ShiftMask,             XK_j,      spawn, ST("noice")},
-	{MODKEY,                       XK_v,      spawn, ST("vim")},
-	{MODKEY,                       XK_w,      spawn, ST("w3m -B")},
-	{MODKEY|ShiftMask,             XK_slash,  spawn, {.v = clipdel}},
 	{MODKEY,                       XK_slash,  spawn, {.v = clipmenu}},
 	{MODKEY,                       XK_p,      spawn, {.v = dmenucmd}},
 	{MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd}},
+	{MODKEY|ControlMask|ShiftMask, XK_Return, spawn, {.v = termcmdalt}},
 
 	/* audio */
 	{0,                            XF86XK_AudioRaiseVolume,  spawn, VOL("5%+")},
