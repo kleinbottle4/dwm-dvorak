@@ -214,8 +214,8 @@ static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void fullscreen(const Arg *arg);
-static void togglegaps(const Arg *arg);
-static void refreshborders(void);
+//static void togglegaps(const Arg *arg);
+//static void refreshborders(void);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setsmfact(const Arg *arg);
@@ -1682,6 +1682,7 @@ setgaps(int oh, int ov, int ih, int iv)
 	arrange(selmon);
 }
 
+/*
 void
 togglegaps(const Arg *arg)
 {
@@ -1701,6 +1702,7 @@ refreshborders(void)
 			c->bw = borderpx;
 	}
 }
+*/
 
 void
 setfullscreen(Client *c, int fullscreen)

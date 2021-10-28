@@ -2,8 +2,8 @@
 
 #include <X11/XF86keysym.h>
 
-#define COL2 "gray50"
-#define COL1 "gray5"
+#define COL2 "#ecf0c1"
+#define COL1 "#0a1e24"
 //"gray5"
 static const char     col_nb[]     = COL1;
 static const char     col_nf[]     = COL2;
@@ -12,7 +12,7 @@ static const char     col_sb[]     = COL2;
 static const char     col_sf[]     = COL1;
 static const char     col_sbo[]    = "white";
 static const char     *colors[][3] = {[SchemeNorm] = {col_nf, col_nb, col_nbo}, [SchemeSel]  = {col_sf, col_sb,  col_sbo }, };
-static const char     dmenufont[]  = "monospace:size=20";
+static const char     dmenufont[]  = "monospace:size=18";
 static const char     *fonts[]     = {dmenufont};
 static const float    mfact        = 0.55; /* factor of master area size [0.05..0.95] */
 static const float    smfact       = 0.00; /* factor of tiled clients [0.00..0.95] */
@@ -57,11 +57,9 @@ static const char *dmenucmd[] = {"dmenu_run", "-m", dmenumon, "-fn", dmenufont, 
 static const char *termcmd[] = {"st", "-d", HOME, "tmux", NULL};
 static const char *termcmdalt[] = {"st", "-d", HOME, "9", "rc", NULL};
 static const char *clipmenu[] = {"clipmenu", "-nb", col_nb, "-nf", col_nf, "-sf", col_sf, "-sb", col_sb, "-fn", dmenufont, NULL};
-static const char *clipdel[]  = {"clipdel", "-d", ".*", NULL};
 
-#define VOLF(s) SHCMD(\
-	"pactl set-sink-volume alsa_output.pci-0000_00_14.2.analog-stereo " \
-	s " && " DWMDIR "/bin/volume_notify " s)
+#define VOLF(s) SHCMD("pactl set-sink-volume alsa_output.pci-0000_00_14.2.analog-stereo " \
+	s " && " DWMDIR "/bin/volume_notify ")
 
 #define VOL(s) SHCMD("amixer -M set Master " \
 	s " && " DWMDIR "/bin/volume_notify")
@@ -105,8 +103,8 @@ static Key keys[] = {
 	{MODKEY, XK_backslash, spawn, SHCMD("pgrep xcompmgr && pkill xcompmgr || xcompmgr; " NOT("comp"))},
 //	{MODKEY,                   XK_apostrophe, togglegaps, {0}},
 //	{MODKEY,                   XK_apostrophe, spawn,      SHCMD(NOT("gaps"))},
-	{MODKEY,                   XK_numbersign, spawn,      SHCMD("brightnessctl set 4 &&" NOT("br\\ 4"))},
-	{MODKEY|ShiftMask,         XK_numbersign, spawn,      SHCMD("brightnessctl set 1 &&" NOT("br\\ 1"))},
+	{MODKEY|ShiftMask,         XK_numbersign,      spawn,      SHCMD("brightnessctl set 1 &&" NOT("br\\ 1"))},
+	{MODKEY,                   XK_numbersign,      spawn,      SHCMD("brightnessctl set 4 &&" NOT("br\\ 4"))},
 	{MODKEY,                   XK_minus,      spawn,      SHCMD("brightnessctl set 5%+ &&" NOT("br\\ +"))},
 	{MODKEY|ShiftMask,         XK_minus,      spawn,      SHCMD("brightnessctl set 5%- &&" NOT("br\\ -"))},
 	{0,             XF86XK_MonBrightnessUp,   spawn,      SHCMD("brightnessctl set 5%+ &&" NOT("br\\ +"))},
@@ -126,21 +124,17 @@ static Key keys[] = {
 	{MODKEY|ShiftMask,             XK_s,      spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
 	{0,                            XK_Print,  spawn, SHCMD(DWMDIR "/bin/maim Screenshot")},
 	{MODKEY,                       XK_c,      spawn, ST("calcurse")},
-	{MODKEY,                       XK_e,      spawn, ST("emacsclient -t -a \"\" ~/foo/org/main.org")},
-	{MODKEY|ShiftMask,             XK_e,      spawn, ST("emacsclient -t -a \"\" ~/foo/main.lisp")},
-	{MODKEY|ShiftMask,             XK_m,      spawn, ST("mutt")},
+	{MODKEY,                       XK_e,      spawn, SHCMD("emacsclient -c -a \"\" ~/foo/org/main.org")},
 	{MODKEY,                       XK_j,      spawn, ST("nnn -i")},
 	{MODKEY,                       XK_slash,  spawn, {.v = clipmenu}},
 	{MODKEY,                       XK_p,      spawn, {.v = dmenucmd}},
 	{MODKEY|ShiftMask,             XK_Return, spawn, {.v = termcmd}},
-	{MODKEY|ControlMask|ShiftMask, XK_Return, spawn, {.v = termcmdalt}},
+	{MODKEY,                       XK_r,      spawn, {.v = termcmdalt}},
 
 	/* audio */
-	{0,                            XF86XK_AudioRaiseVolume,  spawn, VOL("5%+")},
-	{0,                            XF86XK_AudioLowerVolume,  spawn, VOL("5%-")},
+	{0,                            XF86XK_AudioRaiseVolume,  spawn, VOLF("+5%")},
+	{0,                            XF86XK_AudioLowerVolume,  spawn, VOLF("-5%")},
 	{0,                            XF86XK_AudioMute,         spawn, VOL("toggle")},
-	{MODKEY,                       XK_semicolon,             spawn, VOLF("+5%")},
-	{MODKEY|ShiftMask,             XK_semicolon,             spawn, VOLF("-5%")},
 
 	/* virtual desktops */
 	{MODKEY,                       XK_asterisk,     view, {.ui = ~0}},
